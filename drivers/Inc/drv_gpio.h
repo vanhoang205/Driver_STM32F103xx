@@ -8,23 +8,21 @@
 #ifndef INC_DRV_GPIO_H_
 #define INC_DRV_GPIO_H_
 
-#define MASK_2BIT		0x0C
+#define MASK_BIT2_3		0x0C
 
 /*
  * configure mode for GPIO
  */
-#define MODE_ANALOG							0
-#define MODE_INPUT							1
-#define MODE_OUTPUT							2
-#define MODE_ALTFUNC						3
-
-/*
- * configure input type for GPIO
- */
-#define INPUT_TYPE_FLOAT					0
-#define INPUT_TYPE_PUR						1
-#define INPUT_TYPE_PDR						2
-
+#define MODE_ANALOG					0
+#define MODE_INPUT_FLOAT			1
+#define MODE_INPUT_PUPDR			2
+#define MODE_OUTPUT_PUPU			4
+#define MODE_OUTPUT_OPENDR			5
+#define MODE_ALT_PUPU				6
+#define MODE_ALT_OPENDR				7
+#define MODE_IT_RISE_EDGE			8
+#define MODE_IT_FALL_EDGE			9
+#define MODE_IT_RISE_FALL_EDGE		10
 /*
  * configure output type for GPIO
  */
@@ -62,8 +60,7 @@ typedef struct {
 	uint8_t pinNumber;
 	uint8_t pinMode;
 	uint8_t pinSpeed;
-	uint8_t pinInType;
-	uint8_t pinOutType;
+	uint8_t pinResType;
 	uint8_t pinAltFunMode;
 } GPIO_PinConfig_t;
 

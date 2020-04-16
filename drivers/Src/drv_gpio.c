@@ -43,65 +43,37 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pPort, uint8_t isEnabled) {
 
 /* Initialization and Deinitialization Pin */
 void GPIO_Init(GPIO_Handle_t *pPortHandle) {
+
 	/*!< 1. Configure the mode of GPIO >*/
 	uint32_t temp = 0;
-	if (pPortHandle->pinConfig.pinMode < MODE_OUTPUT) { // Choosing analog mode or input mode
+	uint8_t temp1, temp2 = 0;
+	if (pPortHandle->pinConfig.pinMode <= MODE_ALT_OPENDR) {	// not using interrupt
+		temp1 = pPortHandle->pinConfig.pinNumber / 8;
+		temp2 = pPortHandle->pinConfig.pinNumber % 8;
+		if (pPortHandle->pinConfig.pinMode <= MODE_INPUT_PUPDR) {
+			// default choose input and analog mode function
 
-		if (pPortHandle->pinConfig.pinMode == MODE_ANALOG) {
-			if (pPortHandle->pinConfig.pinNumber / 8) {
-				temp = pPortHandle->pGPIO->CR[1];
-				temp &= ~(MASK_2BIT << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-				temp |= (MODE_ANALOG << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-				pPortHandle->pGPIO->CR[1] = temp;
-			} else {
-				temp = pPortHandle->pGPIO->CR[0];
-				temp &= ~(MASK_2BIT << (4 * pPortHandle->pinConfig.pinNumber));
-				temp |= (MODE_ANALOG << (4 * pPortHandle->pinConfig.pinNumber));
-				pPortHandle->pGPIO->CR[0] = temp;
-			}
-			temp = 0;
-		} else if (pPortHandle->pinConfig.pinMode == MODE_INPUT) {
-			if (pPortHandle->pinConfig.pinInType != INPUT_TYPE_FLOAT) {
-				if (pPortHandle->pinConfig.pinNumber / 8) {
-					temp = pPortHandle->pGPIO->CR[1];
-					temp &= ~(MASK_2BIT << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-					temp |= (0x02 << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-					pPortHandle->pGPIO->CR[1] = temp;
-				} else {
-					temp = pPortHandle->pGPIO->CR[0];
-					temp &= ~(MASK_2BIT << (4 * pPortHandle->pinConfig.pinNumber));
-					temp |= (0x02 << (4 * pPortHandle->pinConfig.pinNumber));
-					pPortHandle->pGPIO->CR[0] = temp;
-				}
-			}
-			temp = 0;
-		}
-	} else {						// Choosing output mode or altenative mode
-		if (pPortHandle->pinConfig.pinNumber / 8) {
-			pPortHandle->pGPIO->CR[1] |= (0x01
-					<< (4 * (pPortHandle->pinConfig.pinNumber % 8)));
+			//choose analog mode or floating input or pull-up/pull down
+			temp = pPortHandle->pGPIO->CR[temp1];
+			temp &= ~(MASK_BIT2_3 << (4 * temp2));
+			temp |= pPortHandle->pinConfig.pinMode << (4 * temp2);
+			pPortHandle->pGPIO->CR[temp1] = temp;
+			//pPortHandle->pGPIO->CR[temp1] |= pPortHandle->pinConfig.pinMode << (4 * temp2);
 		} else {
-			pPortHandle->pGPIO->CR[0] = (0x01
-					<< (4 * pPortHandle->pinConfig.pinNumber));
+			// choose output and alternative function mode
+			// At the same time, choose speed output
+			pPortHandle->pGPIO->CR[temp1] |= pPortHandle->pinConfig.pinSpeed << (4 * temp2);
+
+			// choose alternative or output mode with open-drain/push pull capacity
+			temp = pPortHandle->pGPIO->CR[temp1];
+			temp &= ~(MASK_BIT2_3 << (4 * temp2));
+			temp |= ((pPortHandle->pinConfig.pinMode - 4) << (4 * temp2));
+			pPortHandle->pGPIO->CR[temp1] = temp;
 		}
-		if (pPortHandle->pinConfig.pinMode == MODE_ALTFUNC) {
-			if (pPortHandle->pinConfig.pinOutType == OUTPUT_TYPE_OPENDR) {
-				if (pPortHandle->pinConfig.pinNumber / 8) {
-					temp = pPortHandle->pGPIO->CR[1];
-					temp &= ~(MASK_2BIT << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-					temp |= (0x03 << (4 * (pPortHandle->pinConfig.pinNumber % 8)));
-					pPortHandle->pGPIO->CR[1] = temp;
-				} else {
-					temp = pPortHandle->pGPIO->CR[0];
-					temp &= ~(MASK_2BIT << (4 * pPortHandle->pinConfig.pinNumber));
-					temp |= (0x03 << (4 * pPortHandle->pinConfig.pinNumber));
-					pPortHandle->pGPIO->CR[0] = temp;
-				}
-			}
-		}
+	} else {	// using interrupt
+
 	}
 
-	//2. Configure the speed
 
 	//3. Configure the pull up/ pull down resistor
 
