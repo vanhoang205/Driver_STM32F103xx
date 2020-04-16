@@ -36,6 +36,8 @@
 #define OUTPUT_SPEED_2Mhz					2
 #define OUTPUT_SPEED_50Mhz					3
 
+#define INPUT_PULLUP						1
+#define INPUT_PULLDOWN						0
 /*
  * Pin number
  */
@@ -79,11 +81,11 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle);
 void GPIO_DeInit(GPIO_RegDef_t *pPort);
 
 /* Read and Write data */
-uint8_t GPIO_ReadPin(GPIO_RegDef_t *pPort, uint8_t pin);
-void GPIO_ReadPort(GPIO_RegDef_t *pPort);
-void GPIO_WritePin(GPIO_RegDef_t *pPort, uint8_t pin, uint8_t value);
+uint8_t GPIO_ReadPin(GPIO_RegDef_t *pPort, uint8_t pinNum);
+uint16_t GPIO_ReadPort(GPIO_RegDef_t *pPort);
+void GPIO_WritePin(GPIO_RegDef_t *pPort, uint8_t pinNum, uint8_t value);
 void GPIO_WritePort(GPIO_RegDef_t *pPort, uint16_t value);
-void GPIO_TogglePin(GPIO_RegDef_t *pPort, uint8_t pin);
+void GPIO_TogglePin(GPIO_RegDef_t *pPort, uint8_t pinNum);
 
 /* config interrupt */
 void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPrior, uint8_t isEnabled);

@@ -22,8 +22,27 @@
 #endif
 
 #include "stm32f103xx.h"
+#include "drv_gpio.h"
+
+void delay() {
+	for (int i = 0; i < 500000; i++);
+}
 int main(void)
 {
+	GPIO_Handle_t gpioLed;
 
-	for(;;);
+	(RCC->APB2ENR |= (1 << 0));
+	AFIO->MAPR |= (1 << 25);
+
+	gpioLed.pGPIO = GPIOB;
+	gpioLed.pinConfig.pinMode = MODE_OUTPUT_PUPU;
+	gpioLed.pinConfig.pinSpeed = OUTPUT_SPEED_2Mhz;
+	gpioLed.pinConfig.pinNumber = GPIO_PIN_4;
+	GPIO_PeriClockControl(GPIOB, TRUE);
+	GPIO_WritePin(GPIOB, GPIO_PIN_4, LOW);
+	GPIO_Init(&gpioLed);
+	while (1) {
+		GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+		delay();
+	}
 }

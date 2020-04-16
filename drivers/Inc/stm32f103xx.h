@@ -28,6 +28,8 @@
 /*
  * Định địa chỉ BASE ADDRESS cho các ngoại vi được nối đến bus APB2
  */
+#define AFIO_BASEADDR				(APB2_BASEADDR)
+
 #define GPIOA_BASEADDR				(APB2_BASEADDR + 0x0800)
 #define GPIOB_BASEADDR				(APB2_BASEADDR + 0x0C00)
 #define GPIOC_BASEADDR				(APB2_BASEADDR + 0x1000)
@@ -71,6 +73,24 @@ typedef struct
 	__vo uint32_t LCKR;			/* Port configuration lock register */
 }GPIO_RegDef_t;
 
+/*
+ * Định nghĩa cấu trúc thanh ghi của AFIO
+ */
+typedef struct
+{
+	__vo uint32_t EVCR;
+	__vo uint32_t MAPR;
+	__vo uint32_t EXTICR1;
+	__vo uint32_t EXTICR2;
+	__vo uint32_t EXTICR3;
+	__vo uint32_t EXTICR4;
+	__vo uint32_t RESERVED;
+	__vo uint32_t MAPR2;
+}AFIO_RegDef_t;
+/*
+ * Định nghĩa các macro khai báo AFIO
+ */
+#define AFIO	((AFIO_RegDef_t*)AFIO_BASEADDR)
 /*
  * Định nghĩa các macro khai báo truy cập đến GPIO
  */
@@ -192,6 +212,12 @@ typedef struct
 #define USART3_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 18))
 #define UART4_PCLK_DI()			(RCC->APB1ENR &= ~(1 << 19))
 #define UART5_PCLK_DI()			(RCC->APB1ENR &= ~(1 << 20))
+
+#define GPIOA_REG_RESET()	do{RCC->APB2RSTR |= (1 << 2); RCC->APB2RSTR &= ~(1 << 2);}while(0)
+#define GPIOB_REG_RESET()	do{RCC->APB2RSTR |= (1 << 3); RCC->APB2RSTR &= ~(1 << 3);}while(0)
+#define GPIOC_REG_RESET()	do{RCC->APB2RSTR |= (1 << 4); RCC->APB2RSTR &= ~(1 << 4);}while(0)
+#define GPIOD_REG_RESET()	do{RCC->APB2RSTR |= (1 << 5); RCC->APB2RSTR &= ~(1 << 5);}while(0)
+#define GPIOE_REG_RESET()	do{RCC->APB2RSTR |= (1 << 6); RCC->APB2RSTR &= ~(1 << 6);}while(0)
 
 /*
  * Định nghĩa macro enable/disable clock cho ngoại vi I2C
