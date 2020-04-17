@@ -42,9 +42,8 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle) {
 			//choose analog mode or floating input or pull-up/pull down
 			temp = pPortHandle->pGPIO->CR[temp1];
 			temp &= ~(MASK_BIT2_3 << (4 * temp2));
-			temp |= pPortHandle->pinConfig.pinMode << (4 * temp2);
+			temp |= pPortHandle->pinConfig.pinMode << ((4 * temp2) + 2);
 			pPortHandle->pGPIO->CR[temp1] = temp;
-			//pPortHandle->pGPIO->CR[temp1] |= pPortHandle->pinConfig.pinMode << (4 * temp2);
 		} else {
 			// choose output and alternative function mode
 			// At the same time, choose speed output
@@ -53,7 +52,7 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle) {
 			// choose alternative or output mode with open-drain/push pull capacity
 			temp = pPortHandle->pGPIO->CR[temp1];
 			temp &= ~(MASK_BIT2_3 << (4 * temp2));
-			temp |= ((pPortHandle->pinConfig.pinMode - 4) << (4 * temp2));
+			temp |= ((pPortHandle->pinConfig.pinMode - 4) << ((4 * temp2) + 2));
 			pPortHandle->pGPIO->CR[temp1] = temp;
 		}
 	} else {	// using interrupt

@@ -25,24 +25,38 @@
 #include "drv_gpio.h"
 
 void delay() {
-	for (int i = 0; i < 500000; i++);
+	for (int i = 0; i < 500000/6 ; i++);
 }
 int main(void)
 {
 	GPIO_Handle_t gpioLed;
+	GPIO_Handle_t gpioButton;
 
 	(RCC->APB2ENR |= (1 << 0));
 	AFIO->MAPR |= (1 << 25);
 
 	gpioLed.pGPIO = GPIOB;
-	gpioLed.pinConfig.pinMode = MODE_OUTPUT_PUPU;
+	gpioLed.pinConfig.pinMode = MODE_OUTPUT_OPENDR;
 	gpioLed.pinConfig.pinSpeed = OUTPUT_SPEED_2Mhz;
 	gpioLed.pinConfig.pinNumber = GPIO_PIN_4;
+
+	gpioButton.pGPIO = GPIOA;
+	gpioButton.pinConfig.pinMode = MODE_INPUT_PUPDR;
+	gpioButton.pinConfig.pinNumber = GPIO_PIN_2;
+	gpioButton.pinConfig.pinResType = INPUT_PULLUP;
+
+	GPIO_PeriClockControl(GPIOA, TRUE);
 	GPIO_PeriClockControl(GPIOB, TRUE);
-	GPIO_WritePin(GPIOB, GPIO_PIN_4, LOW);
+
 	GPIO_Init(&gpioLed);
+	GPIO_Init(&gpioButton);
 	while (1) {
-		GPIO_TogglePin(GPIOB, GPIO_PIN_4);
-		delay();
+		if (!GPIO_ReadPin(GPIOA, GPIO_PIN_2)) {
+			delay();
+			GPIO_TogglePin(GPIOB, GPIO_PIN_4);
+			while (!GPIO_ReadPin(GPIOA, GPIO_PIN_2)) {
+				delay();
+			}
+		}
 	}
 }
