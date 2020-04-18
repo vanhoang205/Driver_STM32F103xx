@@ -33,9 +33,10 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle) {
 
 	// Configure mode, speed, output type and interrupt for pin
 	uint32_t temp = 0;
-	uint8_t temp1 = pPortHandle->pinConfig.pinNumber / 8;
-	uint8_t temp2 = pPortHandle->pinConfig.pinNumber % 8;
-	if (pPortHandle->pinConfig.pinMode <= MODE_ALT_OPENDR) {	// not using interrupt
+
+	if (pPortHandle->pinConfig.pinMode <= MODE_ALT_OPENDR) {		// not using interrupt
+		uint8_t temp1 = pPortHandle->pinConfig.pinNumber / 8;
+		uint8_t temp2 = pPortHandle->pinConfig.pinNumber % 8;
 		if (pPortHandle->pinConfig.pinMode <= MODE_INPUT_PUPDR) {
 			// default choose input and analog mode function
 
@@ -56,7 +57,24 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle) {
 			pPortHandle->pGPIO->CR[temp1] = temp;
 		}
 	} else {	// using interrupt
-
+		uint8_t temp1 = pPortHandle->pinConfig.pinNumber / 4;
+		uint8_t temp2 = pPortHandle->pinConfig.pinNumber % 4;
+		if (pPortHandle->pinConfig.pinMode == MODE_IT_FALL_EDGE) {
+			// configure the FTSR
+			EXTI->FTSR |= 1 << pPortHandle->pinConfig.pinNumber;
+			EXTI->RTSR &= ~(1 << pPortHandle->pinConfig.pinNumber);
+		} else if (pPortHandle->pinConfig.pinMode == MODE_IT_RISE_EDGE) {
+			EXTI->RTSR |= 1 << pPortHandle->pinConfig.pinNumber;
+			EXTI->FTSR &= ~(1 << pPortHandle->pinConfig.pinNumber);
+		} else if (pPortHandle->pinConfig.pinMode == MODE_IT_RISE_FALL_EDGE) {
+			EXTI->FTSR |= 1 << pPortHandle->pinConfig.pinNumber;
+			EXTI->RTSR |= 1 << pPortHandle->pinConfig.pinNumber;
+		}
+		//2. configure the GPIO port selection in SYSCFG_EXTIR
+		AFIO_PCLK_EN();
+		AFIO->EXTICR[temp1] |= DECODE_PORT_EXTI(pPortHandle->pGPIO) << (4 * temp2);
+		//3. enable the exti interrupt delivery using IMR
+		EXTI->IMR |= 1 << pPortHandle->pinConfig.pinNumber;
 	}
 
 	// configure the pull/pull down resistor
@@ -111,7 +129,21 @@ void GPIO_TogglePin(GPIO_RegDef_t *pPort, uint8_t pinNum) {
 
 /* config interrupt */
 void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPrior, uint8_t isEnabled) {
+	if (isEnabled == TRUE) {
+		if (IRQNum <= 31) {
+			*NVIC_ISER0 |= 1 << IRQNum;
+		} else if (IRQNum > 31 && IRQNum <= 64) {
+			*NVIC_ISER1 |= 1 << (IRQNum % 32);
+		}
+	} else {
+		if (IRQNum <= 31) {
+			*NVIC_ICER0 |= 1 << IRQNum;
 
+		} else if (IRQNum > 31 && IRQNum <= 64) {
+			*NVIC_ICER1 |= 1 << (IRQNum % 32);
+
+		}
+	}
 }
 
 void GPIO_IRQHandling(uint8_t pinNum) {

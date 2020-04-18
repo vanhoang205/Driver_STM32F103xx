@@ -16,6 +16,7 @@
 #define HIGH	1
 #define LOW		0
 
+
 #define FLASH_BASEADDR				0x08000000U			/* Địa chỉ đầu tiên cùa bộ nhớ FLASH - 64KB*/
 #define SRAM_BASEADDR				0x20000000U			/* Địa chỉ đầu tiên của bộ nhớ SRAM - 20KB */
 #define ROM_BASEADDR				0x1FFFF000U			/* Thuộc vùng nhớ information block */
@@ -63,30 +64,25 @@
 /*
  * Định nghĩa cấu trúc thanh ghi của GPIO Driver
  */
-typedef struct
-{
-	__vo uint32_t CR[2];		/* Port configuration register */
-	__vo uint32_t IDR;			/* Port input data register */
-	__vo uint32_t ODR;			/* Port output data register */
-	__vo uint32_t BSRR;			/* Port bit set/reset register */
-	__vo uint32_t BRR;			/* Port bit reset register */
-	__vo uint32_t LCKR;			/* Port configuration lock register */
-}GPIO_RegDef_t;
+typedef struct {
+	__vo uint32_t CR[2]; /* Port configuration register */
+	__vo uint32_t IDR; /* Port input data register */
+	__vo uint32_t ODR; /* Port output data register */
+	__vo uint32_t BSRR; /* Port bit set/reset register */
+	__vo uint32_t BRR; /* Port bit reset register */
+	__vo uint32_t LCKR; /* Port configuration lock register */
+} GPIO_RegDef_t;
 
 /*
  * Định nghĩa cấu trúc thanh ghi của AFIO
  */
-typedef struct
-{
+typedef struct {
 	__vo uint32_t EVCR;
 	__vo uint32_t MAPR;
-	__vo uint32_t EXTICR1;
-	__vo uint32_t EXTICR2;
-	__vo uint32_t EXTICR3;
-	__vo uint32_t EXTICR4;
+	__vo uint32_t EXTICR[4];
 	__vo uint32_t RESERVED;
 	__vo uint32_t MAPR2;
-}AFIO_RegDef_t;
+} AFIO_RegDef_t;
 /*
  * Định nghĩa các macro khai báo AFIO
  */
@@ -100,21 +96,19 @@ typedef struct
 #define GPIOD	((GPIO_RegDef_t*)GPIOD_BASEADDR)
 #define GPIOE	((GPIO_RegDef_t*)GPIOE_BASEADDR)
 
-
 /*
  * Định nghĩa cấu trúc thanh ghi của SPI Driver
  */
-typedef struct
-{
-	__vo uint32_t CR[2];		/* SPI control register */
-	__vo uint32_t SR;			/* SPI status register */
-	__vo uint32_t DR;			/* SPI status register */
-	__vo uint32_t CRCPR;		/* SPI CRC polynomial register */
-	__vo uint32_t RXCRCR;		/* SPI RX CRC register */
-	__vo uint32_t TXCRCR;		/* SPI TX CRC register */
-	__vo uint32_t I2SCFGR;		/* SPI_I2S configuration register */
-	__vo uint32_t I2SPR;		/* SPI_I2S prescaler register */
-}SPI_RegDef_t;
+typedef struct {
+	__vo uint32_t CR[2]; /* SPI control register */
+	__vo uint32_t SR; /* SPI status register */
+	__vo uint32_t DR; /* SPI status register */
+	__vo uint32_t CRCPR; /* SPI CRC polynomial register */
+	__vo uint32_t RXCRCR; /* SPI RX CRC register */
+	__vo uint32_t TXCRCR; /* SPI TX CRC register */
+	__vo uint32_t I2SCFGR; /* SPI_I2S configuration register */
+	__vo uint32_t I2SPR; /* SPI_I2S prescaler register */
+} SPI_RegDef_t;
 
 /*
  * Định nghĩa các macro khai báo truy cập đến SPI
@@ -126,15 +120,14 @@ typedef struct
 /*
  * Định nghĩa cấu trúc thanh ghi của I2C Driver
  */
-typedef struct
-{
+typedef struct {
 	__vo uint32_t CR[2];
 	__vo uint32_t OAR[2];
 	__vo uint32_t DR;
 	__vo uint32_t SR[2];
 	__vo uint32_t CCR;
 	__vo uint32_t TRISE;
-}I2C_RegDef_t;
+} I2C_RegDef_t;
 /*
  * Định nghĩa các macro khai báo truy cập đến I2C
  */
@@ -144,14 +137,13 @@ typedef struct
 /*
  * Định nghĩa cấu trúc thanh ghi USART
  */
-typedef struct
-{
+typedef struct {
 	__vo uint32_t SR;
 	__vo uint32_t DR;
 	__vo uint32_t BRR;
 	__vo uint32_t CR[3];
 	__vo uint32_t GTPR;
-}USART_RegDef_t;
+} USART_RegDef_t;
 /*
  * Định nghĩa các macro khai báo truy cập đến USART
  */
@@ -164,8 +156,7 @@ typedef struct
 /*
  * Định nghĩa cấu trúc thanh ghi RCC Driver
  */
-typedef struct
-{
+typedef struct {
 	__vo uint32_t CR;
 	__vo uint32_t CFGR;
 	__vo uint32_t CIR;
@@ -178,10 +169,25 @@ typedef struct
 	__vo uint32_t CSR;
 	__vo uint32_t AHBSTR;
 	__vo uint32_t CFGR2;
-}RCC_RegDef_t;
+} RCC_RegDef_t;
 
 /* Định nghĩa các macro khai báo truy cập đến RCC Driver */
 #define RCC		((RCC_RegDef_t*)RCC_BASEADDR)
+
+/*
+ * Định nghĩa cấu trúc thanh ghi EXTI Driver
+ */
+typedef struct {
+	__vo uint32_t IMR;
+	__vo uint32_t EMR;
+	__vo uint32_t RTSR;
+	__vo uint32_t FTSR;
+	__vo uint32_t SWIER;
+	__vo uint32_t PR;
+} EXTI_RegDef_t;
+
+/* Định nghĩa các macro khai áo truy cập EXTI Driver */
+#define EXTI	((EXTI_RegDef_t*)EXTI_BASEADDR)
 
 /*
  * Định nghĩa macro enable/disable clock cho ngoại vi GPIO
@@ -228,7 +234,6 @@ typedef struct
 #define I2C1_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 21))
 #define I2C2_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 22))
 
-
 /*
  * Định nghĩa macro enable/disable clock cho ngoại vi SPI
  */
@@ -240,4 +245,38 @@ typedef struct
 #define SPI2_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 14))
 #define SPI3_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 15))
 
+#define AFIO_PCLK_EN()		(RCC->APB2ENR |= (1 << 0));
+
+/*
+ * Decode EXTI PORT
+ */
+#define DECODE_PORT_EXTI(x)		((x == GPIOA)?0:\
+								 (x == GPIOB)?1:\
+								 (x == GPIOC)?2:\
+								 (x == GPIOD)?3:\
+								 (x == GPIOE)?4:0)
+
+/*
+ * Define IRQ number for EXTI
+ */
+#define		IRQ_NO_EXTI0			6
+#define		IRQ_NO_EXTI1			7
+#define		IRQ_NO_EXTI2			8
+#define		IRQ_NO_EXTI3			9
+#define		IRQ_NO_EXTI4			10
+#define		IRQ_NO_EXTI9_5			23
+#define		IRQ_NO_EXTI15_10		40
+
+/*
+ * define base address ISER
+ */
+#define NVIC_ISER0		((__vo uint32_t*)0xE000E100)
+#define NVIC_ISER1		((__vo uint32_t*)0xE000E104)
+
+
+/*
+ * define base address ICER
+ */
+#define NVIC_ICER0		((__vo uint32_t*)0xE000E180)
+#define NVIC_ICER1		((__vo uint32_t*)0xE000E184)
 #endif /* INC_STM32F103XX_H_ */
