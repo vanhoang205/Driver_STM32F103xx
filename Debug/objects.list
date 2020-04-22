@@ -1,6 +1,6 @@
-"Src/01_GPIO_ReadWrite.o"
-"Src/02_GPIO_Interrupt.o"
+"Src/03_SPI_TransmitData.o"
 "Src/syscalls.o"
 "Src/sysmem.o"
 "Startup/startup_stm32f103c8tx.o"
 "drivers/Src/drv_gpio.o"
+"drivers/Src/drv_spi.o"

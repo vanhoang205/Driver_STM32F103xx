@@ -33,7 +33,7 @@ void GPIO_Init(GPIO_Handle_t *pPortHandle) {
 
 	// Configure mode, speed, output type and interrupt for pin
 	uint32_t temp = 0;
-
+	GPIO_PeriClockControl(pPortHandle->pGPIO, TRUE);
 	if (pPortHandle->pinConfig.pinMode <= MODE_ALT_OPENDR) {		// not using interrupt
 		uint8_t temp1 = pPortHandle->pinConfig.pinNumber / 8;
 		uint8_t temp2 = pPortHandle->pinConfig.pinNumber % 8;
@@ -128,7 +128,7 @@ void GPIO_TogglePin(GPIO_RegDef_t *pPort, uint8_t pinNum) {
 }
 
 /* config interrupt */
-void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPrior, uint8_t isEnabled) {
+void GPIO_ConfigIRQ(uint8_t IRQNum, uint8_t isEnabled) {
 	if (isEnabled == TRUE) {
 		if (IRQNum <= 31) {
 			*NVIC_ISER0 |= 1 << IRQNum;
@@ -138,14 +138,21 @@ void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPrior, uint8_t isEnabled) {
 	} else {
 		if (IRQNum <= 31) {
 			*NVIC_ICER0 |= 1 << IRQNum;
-
 		} else if (IRQNum > 31 && IRQNum <= 64) {
 			*NVIC_ICER1 |= 1 << (IRQNum % 32);
-
 		}
 	}
 }
 
-void GPIO_IRQHandling(uint8_t pinNum) {
+void GPIO_SetPriorityIRQ(uint8_t IRQNum, uint32_t priority) {
+	uint8_t temp1, temp2;
+	temp1 = IRQNum / 4;
+	temp2 = IRQNum % 4;
+	*(NVIC_IPR_BASEADDR + temp1) |= 1 << ((temp2 * 2) + NVIC_NO_PRIORITY_NUMBIT);
+}
 
+void GPIO_IRQHandling(uint8_t pinNum) {
+	if (EXTI->PR & (1 << pinNum)) {
+		EXTI->PR  |= (1 << pinNum);
+	}
 }

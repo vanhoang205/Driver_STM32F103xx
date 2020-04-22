@@ -1,0 +1,10 @@
+drv_spi.c:5:6:SPI_Remap	16	static
+drv_spi.c:13:9:GetFlagStatus	16	static
+drv_spi.c:20:6:SPI_PeriClockControl	16	static
+drv_spi.c:35:6:SPI_Init	24	static
+drv_spi.c:61:6:SPI_DeInit	16	static
+drv_spi.c:68:6:SPI_TransmitData	24	static
+drv_spi.c:83:6:SPI_ReceiveData	24	static
+drv_spi.c:88:6:SPI_ConfigIRQ	16	static
+drv_spi.c:91:6:SPI_SetPriorityIRQ	16	static
+drv_spi.c:94:6:SPI_IRQHandling	16	static

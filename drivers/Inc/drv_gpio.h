@@ -8,7 +8,9 @@
 #ifndef INC_DRV_GPIO_H_
 #define INC_DRV_GPIO_H_
 
-#define MASK_BIT2_3		0x0C
+#define MASK_BIT2_3					0x0C
+
+#define SPI_MAPR_SPI1REMAP_BIT		0
 
 /*
  * configure mode for GPIO
@@ -63,7 +65,6 @@ typedef struct {
 	uint8_t pinMode;
 	uint8_t pinSpeed;
 	uint8_t pinResType;
-	uint8_t pinAltFunMode;
 } GPIO_PinConfig_t;
 
 /* Define Handle structure for GPIO pin */
@@ -88,6 +89,7 @@ void GPIO_WritePort(GPIO_RegDef_t *pPort, uint16_t value);
 void GPIO_TogglePin(GPIO_RegDef_t *pPort, uint8_t pinNum);
 
 /* config interrupt */
-void GPIO_IRQConfig(uint8_t IRQNum, uint8_t IRQPrior, uint8_t isEnabled);
-void GPIO_IRQHandling(uint8_t pin);
+void GPIO_ConfigIRQ(uint8_t IRQNum, uint8_t isEnabled);
+void GPIO_SetPriorityIRQ(uint8_t IRQNum, uint32_t priority);
+void GPIO_IRQHandling(uint8_t pinNum);
 #endif /* INC_DRV_GPIO_H_ */

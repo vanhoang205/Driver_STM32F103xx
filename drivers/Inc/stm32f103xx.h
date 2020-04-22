@@ -118,6 +118,17 @@ typedef struct {
 #define SPI3	((SPI_RegDef_t*)SPI3_BASEADDR)
 
 /*
+ * Định nghĩa các macro enable clk spi
+ */
+#define SPI1_PCLK_EN()		(RCC->APB2ENR |= (1 << 12))
+#define SPI2_PCLK_EN()		(RCC->APB1ENR |= (1 << 14))
+#define SPI3_PCLK_EN()		(RCC->APB1ENR |= (1 << 15))
+
+#define SPI1_PCLK_DI()		(RCC->APB2ENR &= ~(1 << 12))
+#define SPI2_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 14))
+#define SPI3_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 15))
+
+/*
  * Định nghĩa cấu trúc thanh ghi của I2C Driver
  */
 typedef struct {
@@ -245,7 +256,7 @@ typedef struct {
 #define SPI2_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 14))
 #define SPI3_PCLK_DI()		(RCC->APB1ENR &= ~(1 << 15))
 
-#define AFIO_PCLK_EN()		(RCC->APB2ENR |= (1 << 0));
+#define AFIO_PCLK_EN()		(RCC->APB2ENR |= (1 << 0))
 
 /*
  * Decode EXTI PORT
@@ -256,6 +267,8 @@ typedef struct {
 								 (x == GPIOD)?3:\
 								 (x == GPIOE)?4:0)
 
+#define EXTI_DISABLE(x)		(EXTI->IMR &= ~(1 << x))
+#define EXTI_ENABLE(x)		(EXTI->IMR |= (1 << x))
 /*
  * Define IRQ number for EXTI
  */
@@ -279,4 +292,17 @@ typedef struct {
  */
 #define NVIC_ICER0		((__vo uint32_t*)0xE000E180)
 #define NVIC_ICER1		((__vo uint32_t*)0xE000E184)
+
+/*
+ * define base address interrupt priority register
+ */
+#define NVIC_IPR_BASEADDR			((__vo uint32_t*)0xE000E400)
+
+#define NVIC_NO_PRIORITY_NUMBIT		4
+
+
+typedef enum{
+     val1 = 0,
+     val2 = 1,
+} status;
 #endif /* INC_STM32F103XX_H_ */
